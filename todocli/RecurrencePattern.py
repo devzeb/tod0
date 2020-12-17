@@ -36,7 +36,9 @@ class RecurrencePattern:
         return recurrence.body
 
     @classmethod
-    def weekly(cls, interval: int, days_of_week: List[DayOfWeek], first_day_of_week: DayOfWeek):
+    def weekly(
+        cls, interval: int, days_of_week: List[DayOfWeek], first_day_of_week: DayOfWeek
+    ):
         recurrence = cls()
         recurrence.set_pattern_type(cls.Type.Weekly)
         recurrence.set_interval(interval)
