@@ -17,6 +17,14 @@ class Task:
         Normal = "normal"
         High = "high"
 
+    class RecurrencePattern(Enum):
+        Daily = "daily"                     # e.g. Repeat event every 3 days.
+        Weekly = "weekly"                   # e.g. Repeat event Monday and Tuesday of every other week.
+        AbsoluteMonthly = "absoluteMonthly" # e.g. Repeat event quarterly (every 3 months) on the 15th.
+        RelativeMonthly = "relativeMonthly" # e.g. Repeat event on the second Thursday or Friday every three months.
+        AbsoluteYearly = "absoluteYearly"   # e.g. Repeat event on the 15th of March every 3 years.
+        RelativeYearly = "relativeYearly"   # e.g. Repeat event on the second Thursday or Friday of every November every 3 years.
+
     def __init__(self, query_result):
         self.title = query_result["title"]
         self.id = query_result["id"]
