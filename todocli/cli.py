@@ -2,17 +2,13 @@ import argparse
 import shlex
 import sys
 
-from todocli.datetime_parser import parse_datetime
-from todocli.error import eprint
-from todocli.task import Task
-from todocli.todolist import TodoList
-from todocli.error import eprint
-from todocli.todo_api import todo_api
-from todocli.todo_api.exceptions import (
-    ListNotFound,
-    TaskNotFoundByIndex,
-    TaskNotFoundByName,
+import todocli.todo_api as todo_api
+from todocli.datetime_parser import (
+    parse_datetime,
+    TimeExpressionNotRecognized,
+    ErrorParsingTime,
 )
+from todocli.error import error, eprint
 
 help_msg = """
 NAME
@@ -72,19 +68,32 @@ Specifying time:
         Max: 99h
         
     morning
-        Tomorrow morning at 07:00 AM
+        Today at 07:00 AM if current time < 07:00 AM, otherwise tomorrow
         
     evening
-        Today at 06:00 PM if current time < 06:00 PM, otherwise tomorrow at 06:00 PM
+        Today at 06:00 PM if current time < 06:00 PM, otherwise tomorrow
+        
+    tomorrow
+        Tomorrow at 07:00 AM
         
     {hour}:{minute}
-        Today at {hour}:{minute}
+        Today at {hour}:{minute} if current time < {hour}:{minute}, otherwise tomorrow 
         e.g. 9:30, 09:30, 17:15
+        
+    {hour}:{minute} am|pm 
+        Today at {hour}:{minute} am|pm  if current time < {hour}:{minute} am|pm, otherwise tomorrow
+        e.g. 9:30 am, 12:00 am, 10:15 pm
         
     {day}.{month}. {hour}:{minute}
         The given day at {hour}:{minute}
         e.g. 24.12. 12:00
-        e.g. 7.4.   9:15"""
+        e.g. 7.4.   9:15
+        
+    {day}.{month}.{year}
+        The given day at 7:00 am
+        e.g. 22.12.2020
+        e.g. 01.01.21
+        """
 
 
 class InvalidTaskPath(Exception):
@@ -119,13 +128,12 @@ def print_list(item_list, print_line_nums):
 
 def ls(args):
     lists = todo_api.GetLists().execute()
-    lists_names = [task_list.display_name for task_list in lists]
+    lists_names = [l.display_name for l in lists]
     print_list(lists_names, args.display_linenums)
 
 
 def lst(args):
     tasks = todo_api.GetTasks(args.list_name).execute()
-
     tasks_titles = [x.title for x in tasks]
     print_list(tasks_titles, args.display_linenums)
 
@@ -291,6 +299,10 @@ def main():
             except TaskNotFoundByIndex as e:
                 eprint(e.message)
             except InvalidTaskPath as e:
+                eprint(e.message)
+            except TimeExpressionNotRecognized as e:
+                eprint(e.message)
+            except ErrorParsingTime as e:
                 eprint(e.message)
             finally:
                 sys.stdout.flush()
