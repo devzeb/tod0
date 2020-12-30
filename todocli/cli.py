@@ -2,13 +2,15 @@ import argparse
 import shlex
 import sys
 
-import todocli.todo_api as todo_api
+
 from todocli.datetime_parser import (
     parse_datetime,
     TimeExpressionNotRecognized,
     ErrorParsingTime,
 )
-from todocli.error import error, eprint
+from todocli.error import eprint
+from todocli.todo_api import todo_api
+from todocli.todo_api.exceptions import TaskNotFoundByName, ListNotFound, TaskNotFoundByIndex
 
 help_msg = """
 NAME

@@ -4,6 +4,7 @@ https://docs.microsoft.com/en-us/graph/api/resources/todo-overview?view=graph-re
 """
 from datetime import datetime
 
+from todocli.todolist import TodoList
 
 from todocli.rest_request import (
     RestRequestWithBody,
@@ -126,7 +127,7 @@ class GetList:
 class GetLists:
     def execute(self):
         result = query_lists()
-        return result
+        return [TodoList(list_) for list_ in result]
 
 
 class CreateList(_RestRequestList):
