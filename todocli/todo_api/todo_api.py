@@ -47,6 +47,12 @@ class _RestRequestTask:
         self.request["title"] = title
         return self
 
+    def set_recurrence(self, recurrence_pattern, recurrence_range):
+        self.request["recurrence"] = {
+            "pattern": recurrence_pattern,
+            "range": recurrence_range,
+        }
+
     def set_reminder(self, reminder_datetime):
         self.request["isReminderOn"] = True
         self.request["reminderDateTime"] = datetime_to_api_timestamp(reminder_datetime)
